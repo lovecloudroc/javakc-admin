@@ -2,8 +2,41 @@
   <div id="app-container">
     <!-- 查询表单 -->
     <el-form :inline="true" class="demo-form-inline">
-      <el-form-item>
+      <el-form-item label="书名：">
         <el-input v-model="bookQuery.title" placeholder="书名" />
+      </el-form-item>
+      <el-form-item label="作者：">
+        <el-input v-model="bookQuery.author" placeholder="作者" />
+      </el-form-item>
+      <el-form-item label="连载">
+        <el-select v-model="bookQuery.serialize" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-select v-model="bookQuery.status" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="原创">
+        <el-select v-model="bookQuery.original" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="授权开始时间">
         <el-date-picker
@@ -100,12 +133,20 @@ export default {
   data() { // ## 定义变量和初始值
     return {
       bookList: [], // ## 数据列表
-      bookQuery: {
-      }, // ##查询条件封装对象
+      bookQuery: { // ##查询条件封装对象
+      },
       total: 0, // ## 总记录数
       pageNo: 1, // ## 页码
       pageSize: 10, // ## 每页显示记录数
-      currentTime: '' // ## 当前时间
+      currentTime: '', // ## 当前时间
+      options: [{
+        value: '1',
+        label: '是'
+      }, {
+        value: '0',
+        label: '否'
+      }],
+      value: ''
     }
   },
   created() { // ## 在页面渲染之前,一般先调用methods定义的方法
@@ -192,7 +233,8 @@ export default {
       for (let k in o)
         if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
       return fmt
-    }
+    },
+
   }
 }
 </script>
