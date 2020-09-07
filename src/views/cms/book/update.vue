@@ -52,7 +52,18 @@
       <el-form-item label="简介">
         <el-input v-model="book.info" :rows="10" type="textarea"/>
       </el-form-item>
-      <!-- TODO 书封 -->
+      <!-- 书封 -->
+      <el-form-item label="书封">
+        <el-upload
+          class="avatar-uploader"
+          :action="BASE_API+'/oss/uploadFile'"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload">
+          <img v-if="book.imageUrl" :src="book.imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </el-form-item>
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="updateBook()">修改</el-button>
       </el-form-item>
@@ -67,7 +78,9 @@ export default {
   data() {
     return {
       book: {
-        id: ''
+        id: '',
+        title: '',
+        imageUrl: ''
       },
       saveBtnDisabled: false, // ##不禁用保存按钮
       BASE_API: process.env.VUE_APP_BASE_API
@@ -103,3 +116,28 @@ export default {
   }
 }
 </script>
+<style>
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+</style>
