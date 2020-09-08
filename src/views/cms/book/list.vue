@@ -61,6 +61,8 @@
       <router-link :to="'/cms/book/save'">
         <el-button type="primary">添加书籍</el-button>
       </router-link>
+      <el-button type="primary" @click="exportExcel">导出<i class="el-icon-download el-icon--right"></i></el-button>
+      <el-button type="primary" @click="excelDialogVisible=true">导入<i class="el-icon-upload el-icon--right"></i></el-button>
     </el-form>
     <!-- 列表 -->
     <el-table :data="bookList" border fit highlight-current-row>
@@ -123,6 +125,25 @@
       layout="total, prev, pager, next, jumper"
       @current-change="getFindPageBook">
     </el-pagination>
+    <!-- Excel导入 -->
+    <el-dialog
+      title="导入Excel"
+      :visible.sync="excelDialogVisible"
+      width="30%">
+      <el-upload
+        ref="upload"
+        name="file"
+        accept="application/vnd.ms-excel"
+        :action="BASE_API + '/cms/book/importEasyExcel'"
+        :on-success="fileUploadSuccess"
+        :on-error="fileUploadError"
+        :disabled="importBtnDisabled"
+        :limit="1"
+        :auto-upload="false">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="importExcel">上传到服务器</el-button>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
@@ -137,7 +158,7 @@ export default {
       },
       total: 0, // ## 总记录数
       pageNo: 1, // ## 页码
-      pageSize: 10, // ## 每页显示记录数
+      pageSize: 5, // ## 每页显示记录数
       currentTime: '', // ## 当前时间
       options: [{
         value: '1',
@@ -146,7 +167,10 @@ export default {
         value: '0',
         label: '否'
       }],
-      value: ''
+      value: '',
+      BASE_API: process.env.VUE_APP_BASE_API, // ## 接口API地址
+      excelDialogVisible: false, // ## 导入Excel窗口, false为关闭
+      importBtnDisabled: false // ## 按钮是否禁用,false为不禁用
     }
   },
   created() { // ## 在页面渲染之前,一般先调用methods定义的方法
@@ -233,6 +257,33 @@ export default {
       for (let k in o)
         if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
       return fmt
+    },
+    exportExcel() { // ## 导出Excel
+      document.location.href = this.BASE_API + '/cms/book/exportEasyExcel'
+    },
+    importExcel() { // 上传Excel
+      // 禁用按钮
+      this.importBtnDisabled = true
+      // 上传
+      this.$refs.upload.submit()
+    },
+    fileUploadSuccess(response) { // ## 导入成功后执行方法
+      // ## 导入成功后关闭窗口
+      this.excelDialogVisible = false
+      // ## 重新查询获取新数据
+      this.getFindPageBook()
+      // ## 提示信息
+      this.$message({
+        type: 'success',
+        message: '导入成功'
+      })
+    },
+    fileUploadError() { // ## 导入失败后执行方法
+      // ## 提示信息
+      this.$message({
+        type: 'error',
+        message: '导入失败'
+      })
     }
   }
 }
