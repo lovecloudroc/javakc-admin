@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const api_name = '/cms/copyright'
+const api_name = '/copyright'
 
 export default {
   // ## 动态条件查询带分页
