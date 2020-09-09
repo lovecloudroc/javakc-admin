@@ -74,8 +74,8 @@
       <el-table-column prop="id" label="书籍ID" width="80" />
       <el-table-column prop="title" label="书名"/>
       <el-table-column prop="author" label="作者" />
-      <el-table-column prop="firstSort" label="一级分类" />
-      <el-table-column prop="secondSort" label="二级分类" />
+      <el-table-column prop="firstSort" label="一级分类" :formatter="firstSortFormat"/>
+      <el-table-column prop="secondSort" label="二级分类" :formatter="secondSortFormat"/>
       <el-table-column label="连载">
         <template slot-scope="scope">
           {{ scope.row.serialize === 1 ? '是' : '否'}}
@@ -149,7 +149,7 @@
 
 <script>
 import book from '@/api/cms/book'
-
+import category from '@/api/cms/category'
 export default {
   data() { // ## 定义变量和初始值
     return {
@@ -170,11 +170,14 @@ export default {
       value: '',
       BASE_API: process.env.VUE_APP_BASE_API, // ## 接口API地址
       excelDialogVisible: false, // ## 导入Excel窗口, false为关闭
-      importBtnDisabled: false // ## 按钮是否禁用,false为不禁用
+      importBtnDisabled: false, // ## 按钮是否禁用,false为不禁用
+      firstCategoryList: [], // ## 一级分类列表
+      secondCategoryList: [] // ## 二级分类列表
     }
   },
   created() { // ## 在页面渲染之前,一般先调用methods定义的方法
     this.getFindPageBook()
+    this.getCategoryList()
   },
   methods: { // ## 创建具体的方法,调用 book.js 定义的方法
     getFindPageBook(pageNo = 1) {
@@ -284,6 +287,30 @@ export default {
         type: 'error',
         message: '导入失败'
       })
+    },
+    getCategoryList() { // 获取树形分类数据
+      category.getCategoryList()
+        .then(response =>{
+          this.firstCategoryList = response.data.items
+        })
+    },
+    firstSortFormat(row) { // 格式话列表中的一级分类
+      for (let i = 0; i < this.firstCategoryList.length ; i++) {
+        if (row.firstSort === this.firstCategoryList[i].id){
+          return this.firstCategoryList[i].title
+        }
+      }
+    },
+    secondSortFormat(row) { // 格式化列表中的二级分类
+      for (let i = 0; i < this.firstCategoryList.length; i++) {
+        if (row.firstSort === this.firstCategoryList[i].id) {
+          for (let j = 0; j < this.firstCategoryList[i].secondCategoryList.length; j++) {
+            if (this.firstCategoryList[i].secondCategoryList[j].id === row.secondSort){
+              return this.firstCategoryList[i].secondCategoryList[j].title
+            }
+          }
+        }
+      }
     }
   }
 }
