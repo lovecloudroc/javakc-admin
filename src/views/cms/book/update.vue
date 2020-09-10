@@ -53,8 +53,8 @@
       </el-form-item>
       <el-form-item label="连载">
         <el-select v-model="book.serialize" clearable placeholder="请选择">
-          <el-option :value="1" label="是"/>
-          <el-option :value="0" label="否"/>
+          <el-option :value="1" label="是" />
+          <el-option :value="0" label="否" />
         </el-select>
       </el-form-item>
       <el-form-item label="全本收费">
@@ -126,8 +126,8 @@ export default {
               .then(response => {
                 this.firstCategoryList = response.data.items
                 // 获取二级分类
-                for (let i = 0; i <this.firstCategoryList.length ; i++) {
-                  if (this.firstCategoryList[i].id === this.book.firstSort){
+                for (let i = 0; i < this.firstCategoryList.length; i++) {
+                  if (this.firstCategoryList[i].id === this.book.firstSort) {
                     this.secondCategoryList = this.firstCategoryList[i].secondCategoryList
                   }
                 }
@@ -136,8 +136,7 @@ export default {
       }
     },
     updateBook() { // ## 修改书籍
-      this.saveBtnDisabled = true // ##禁用保存按钮
-      console.log(this.book)
+      this.saveBtnDisabled = true // ##禁用修改按钮
       book.updateBook(this.book)
         .then(response => {
           // ## 提示信息
